@@ -29,10 +29,12 @@ app.post('/artists', function(req, res){
 app.post('/artists/:name/songs', function(req, res){
 	Artist.findOne({ name: req.params.name }).populate('songs').exec(function(err, artist){
 		if(err){res.send(err)};
+		artist._id;
 		var newSong = new Song(req.body.song);
+		newSong.artist.addToSet(artist._id)
 		newSong.save(function(err, song){
 			if (err) {res.send(err)};
-			artist.songs.push(newSong);
+			artist.songs.addToSet(newSong);
 			artist.save(function(err, artist){
 				if(err){res.send(err)};
 				res.send(song.name + ' was saved to ' + artist.name + "'s collection!");
